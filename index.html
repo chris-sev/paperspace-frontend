@@ -7,16 +7,30 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
-    <title>Document</title>
+    <title>Image Generator</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
+<body x-data="{
+    prompt: '',
+    base64: '',
+    async generateImage() {
+        if (!this.prompt) return;
+        const res = await fetch('', {
+            method: 'POST',
+            headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: this.prompt })
+        });
+
+        const data = await res.json();
+        this.base64 = data.base64;
+    }
+}">
 
     <div class="bg-white">
         <div class="relative isolate px-6 pt-14 lg:px-8">
-
+            <!-- gradient -->
             <div
                 class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
                 aria-hidden="true"
@@ -28,7 +42,6 @@
             </div>
 
             <div class="mx-auto max-w-2xl py-32">
-
                 <div class="text-center">
                     <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
                         Make an Image
@@ -38,11 +51,15 @@
                         image.</p>
 
                     <div class="mt-10 flex items-center justify-center gap-x-6">
-                        <div class="relative">
+                        <form
+                            class="relative"
+                            @submit="generateImage"
+                        >
                             <label
                                 for="prompt"
                                 class="absolute -top-2 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-900"
                             >Prompt</label>
+
                             <textarea
                                 name="prompt"
                                 id="prompt"
@@ -55,10 +72,25 @@
                                 class="rounded-full mt-4 bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >Generate</button>
 
-                        </div>
+                        </form>
+                    </div>
+
+                    <!-- the image -->
+                    <div
+                        x-show="base64"
+                        x-cloak
+                        class="mt-10"
+                    >
+                        <img
+                            x-bind:src="'data:image/png;base64,' + base64"
+                            alt="Your new image"
+                            class="w-full rounded-lg shadow-lg"
+                        >
                     </div>
                 </div>
             </div>
+
+            <!-- gradient -->
             <div
                 class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
                 aria-hidden="true"
