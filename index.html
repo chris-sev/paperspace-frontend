@@ -19,14 +19,15 @@
     async generateImage() {
         this.isProcessing = true;
         if (!this.prompt) return;
-        const res = await fetch('', {
+        console.log('doing it');
+        const res = await fetch('https://tensorboard-n7wvoamsl5.clg07azjl.paperspacegradient.com/sdapi/v1/txt2img', {
             method: 'POST',
             headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt: this.prompt })
         });
 
         const data = await res.json();
-        this.base64 = data.base64;
+        this.base64 = data.images[0];
         this.isProcessing = false;
     }
 }">
@@ -56,7 +57,7 @@
                     <div class="mt-10 flex items-center justify-center gap-x-6">
                         <form
                             class="relative"
-                            @submit="generateImage"
+                            @submit.prevent="generateImage"
                         >
                             <label
                                 for="prompt"
@@ -64,6 +65,7 @@
                             >Prompt</label>
 
                             <textarea
+                                x-model="prompt"
                                 name="prompt"
                                 id="prompt"
                                 class="block w-96 rounded-md border-0 py-5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-xl sm:leading-6"
@@ -71,7 +73,7 @@
                             ></textarea>
 
                             <button
-                                type="button"
+                                type="submit"
                                 class="rounded-full mt-4 bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                                 Generate
